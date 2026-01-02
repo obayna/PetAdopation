@@ -30,7 +30,7 @@ const PetDetails = () => {
       const foundDummy = dummyPets.find(p => p.id === id);
       setPet(foundDummy);
     } else {
-      axios.get('http://localhost:8083/pets')
+      axios.get('https://petadoption-production.up.railway.app')
         .then(res => {
           const foundDbPet = res.data.find(p => p.id.toString() === id.toString());
           setPet(foundDbPet);

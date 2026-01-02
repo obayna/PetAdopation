@@ -15,7 +15,7 @@ const Home = () => {
 
   useEffect(() => {
     if (user && user.id) {
-      axios.get('http://localhost:8083/pets')
+      axios.get('https://petadoption-production.up.railway.app')
         .then(res => {
           const filtered = res.data.filter(pet => pet.user_id === user.id);
           setMyPets(filtered);
@@ -32,7 +32,7 @@ const Home = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to remove your listing?")) {
-      axios.delete(`http://localhost:8083/pets/${id}`)
+      axios.delete(`https://petadoption-production.up.railway.app/${id}`)
         .then(() => setMyPets(myPets.filter(pet => pet.id !== id)))
         .catch(err => console.error(err));
     }
