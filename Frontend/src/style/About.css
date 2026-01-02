@@ -1,0 +1,88 @@
+.about-container {
+  max-width: 1000px; 
+  margin: 20px auto;
+}
+.about {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #fdfdfd;
+  border-bottom: 1px solid #eee;
+}
+.about-hero h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  
+  color: #27259f;
+}
+
+.mission-statement {
+  font-size: 1.3rem;
+  color: #555;
+  line-height: 1.7;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.about-values {
+  padding: 60px 20px;
+  text-align: center;
+}
+.about-values h2 {
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  color: #333;
+}
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+.value-card {
+  padding: 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.value-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px ;
+}
+.value-icon {
+  font-size: 3rem;
+  color: #4839ba; 
+  margin-bottom: 20px;
+}
+.value-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+.value-card p {
+  font-size: 1rem;
+  color: #666666;
+  line-height: 1.6;
+}
+.about-cta {
+  text-align: center;
+  padding: 60px 30px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  margin-top: 40px;
+}
+.about-cta h2 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+.about-cta p {
+  font-size: 1.2rem;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto 30px;
+}
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap; 
+}

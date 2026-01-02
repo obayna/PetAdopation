@@ -1,0 +1,125 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 16px 30px;
+  background-color: e8edd0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: Arial, sans-serif;
+  border-bottom: 1px solid #e0e0e0;
+
+}
+
+.logo a {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #0b0e4fd0;
+}
+
+.nav-center {
+  margin: 0 auto;
+  display: flex;
+  gap: 25px;  
+}
+
+.nav-center a {
+  text-decoration: none;
+  color: #555;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-center a:hover {
+  background-color: #0b023d;
+  color: #3a3983;
+}
+
+.nav-auth {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.nav-auth .auth-link {
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-width: 80px;
+  border: 1px solid transparent;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .nav-center {
+    margin: 0;
+    order: 2;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .logo {
+    order: 1;
+  }
+  .nav-auth {
+    order: 3;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+}
+
+.paw-icon {
+  font-size: 1.6rem; 
+  color: #331975; 
+  flex-shrink: 0;
+}
+
+.nav-center a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 10px 20px; 
+  border-radius: 50px; 
+  background-size: 200% auto;
+  transition: all 0.4s ease-out; 
+}
+
+.nav-center a:hover {
+  background-image: linear-gradient(to right, #6044ad 0%, #361a6d 50%, #8e44ad 100%);
+  background-position: right center; 
+  color: white; 
+  box-shadow: 0 4px 15px 0 rgba(27, 39, 106, 0.4);
+}
+
+.logout-btn-outline {
+  background-color: transparent;
+  color: #3b3a7a;
+  border: 2px solid #3b3a7a;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn-outline:hover {
+  background-color: #3b3a7a;
+  color: white;
+}
