@@ -42,7 +42,7 @@ const AddPet = () => {
         return;
     }
 
-    axios.post('https://petadopation-production.up.railway.app', { ...formData, user_id: user.id })
+    axios.post('https://petadopation-production.up.railway.app/add-pet', { ...formData, user_id: user.id })
       .then(() => {
         alert("Pet listed successfully!");
         navigate('/'); 
