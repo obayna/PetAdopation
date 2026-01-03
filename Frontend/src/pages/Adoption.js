@@ -27,7 +27,7 @@ const AdoptionForm = () => {
     }
 
    
-    axios.put(`https://petadoption-production.up.railway.app/${petId}`)
+    axios.put(`https://petadopation-production.up.railway.app/${petId}`)
       .then(() => {
         alert("Application submitted successfully! The pet is now reserved for you. ");
         navigate('/adopt');

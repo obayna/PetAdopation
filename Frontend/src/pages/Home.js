@@ -15,7 +15,7 @@ const Home = () => {
 
   useEffect(() => {
     if (user && user.id) {
-      axios.get('https://petadoption-production.up.railway.app')
+      axios.get('https://petadopation-production.up.railway.app')
         .then(res => {
           const filtered = res.data.filter(pet => pet.user_id === user.id);
           setMyPets(filtered);
