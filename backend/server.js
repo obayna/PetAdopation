@@ -159,7 +159,7 @@ app.get("/api/pets", (req, res) => {
 /* ===============================
    5. SERVER START (RAILWAY SAFE)
 ================================ */
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8083;
 
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
