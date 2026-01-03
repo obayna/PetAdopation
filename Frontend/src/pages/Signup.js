@@ -19,7 +19,7 @@ const Signup = () => {
       return;
     }
 
-    axios.post('https://petadoption-production.up.railway.app', { 
+    axios.post('https://petadoption-production.up.railway.app/signup', { 
         username: name, 
         email: email, 
         password: password 
