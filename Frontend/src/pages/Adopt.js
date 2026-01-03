@@ -35,7 +35,7 @@ const Adopt = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const fetchDbPets = () => {
-    axios.get('https://petadopation-production.up.railway.app/api/pets')
+    axios.get('https://petadopation-production.up.railway.app/api/')
       .then(res => {
         setDbPets(res.data);
        
