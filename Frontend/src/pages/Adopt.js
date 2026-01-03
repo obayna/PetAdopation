@@ -59,8 +59,8 @@ const Adopt = () => {
   const applyFilters = () => {
     const allPets = [...currentDummyPets, ...dbPets];
     const results = allPets.filter(pet => {
-      const matchesType = searchTerms.animalType === 'All Animals' || 
-                          pet.species === searchTerms.animalType.replace(/s$/, '');
+      const matchesType = searchTerms.animalType === 'All Animals' 
+        pet.species === searchTerms.animalType.replace(/s$/, '');
       return matchesType;
     });
     setFilteredPets(results);
