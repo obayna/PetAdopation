@@ -23,14 +23,30 @@ const AddPet = () => {
     }
   }, [user, navigate]);
 
+  // FIXED: Added automatic image compression to prevent 404/Large Payload errors
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result });
-      };
       reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800; // Resize to a max width of 800px
+          const scaleSize = MAX_WIDTH / img.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = img.height * scaleSize;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Convert to JPEG with 0.7 quality (drastically reduces string size)
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          setFormData({ ...formData, image: compressedBase64 });
+        };
+      };
     }
   };
 
@@ -42,14 +58,23 @@ const AddPet = () => {
         return;
     }
 
-    axios.post('https://petadopation-production.up.railway.app/add-pet', { ...formData, user_id: user.id })
-      .then(() => {
+    // URL NOTE: Ensure 'petadopation' is spelled exactly as it appears in your Railway dashboard
+    axios.post('https://petadopation-production.up.railway.app/add-pet', { 
+        ...formData, 
+        user_id: user.id 
+    })
+      .then((res) => {
+        console.log("Response:", res.data);
         alert("Pet listed successfully!");
         navigate('/'); 
       })
       .catch((err) => {
-        console.error(err);
-        alert("Error adding pet. The image might be too large or the server is down.");
+        console.error("Full Error Object:", err);
+        if (err.response && err.response.status === 404) {
+            alert("Error 404: The server received the request but the route /add-pet was not found. Did you push your server.js changes to GitHub?");
+        } else {
+            alert("Error adding pet. The image might still be too large or the server is struggling.");
+        }
       });
   };
 
@@ -83,10 +108,9 @@ const AddPet = () => {
                 onChange={e => setFormData({...formData, age: e.target.value})} 
                 required 
               />
-              {/* FILE INPUT REPLACES URL INPUT */}
               <div className="file-input-container">
                 <label htmlFor="file-upload" className="custom-file-upload">
-                  {formData.image ? "✅ Photo Selected" : "📷 Upload Photo"}
+                  {formData.image ? "✅ Photo Ready" : "📷 Upload Photo"}
                 </label>
                 <input 
                   id="file-upload"
@@ -104,10 +128,9 @@ const AddPet = () => {
               required
             ></textarea>
 
-            {/* PREVIEW: Shows the user the image they picked */}
             {formData.image && (
                 <div className="image-preview">
-                    <img src={formData.image} alt="Preview" />
+                    <img src={formData.image} alt="Preview" style={{maxWidth: '200px', borderRadius: '8px'}} />
                 </div>
             )}
 
