@@ -6,6 +6,9 @@ const PetCard = ({ id, name, age, breed, species, image, status, onAdopt, onDele
   const navigate = useNavigate();
   const isAdopted = status === 'adopted';
 
+  // FIX 1: Placeholder image if the database has no image
+  const placeholderImage = "https://via.placeholder.com/300x200?text=No+Photo+Available";
+
   const handleLearnMore = () => {
     navigate(`/pet-details/${id}`);
   };
@@ -13,7 +16,14 @@ const PetCard = ({ id, name, age, breed, species, image, status, onAdopt, onDele
   return (
     <div className={`pet-card ${isAdopted ? 'adopted-card' : ''}`}>
       <div className="pet-image-container">
-        <img src={image} alt={name} className="pet-image" />
+        {/* FIX 2: Ensure the image source is valid. 
+            If your DB stores raw Base64 without the prefix, this handles it. */}
+        <img 
+          src={image && image.startsWith('data:image') ? image : (image || placeholderImage)} 
+          alt={name} 
+          className="pet-image" 
+          onError={(e) => { e.target.src = placeholderImage; }} // Fallback if image link is broken
+        />
         {isAdopted && <div className="status-badge">ADOPTED</div>}
       </div>
       
@@ -23,13 +33,11 @@ const PetCard = ({ id, name, age, breed, species, image, status, onAdopt, onDele
         <p className="pet-age">Age: {age}</p>
         
         <div className="pet-card-actions">
-          {/* Always show Learn More for everyone */}
           <button className="learn-more-btn" onClick={handleLearnMore}>
             LEARN MORE
           </button>
 
           {isManagePage ? (
-            
             <button 
               className="remove-btn" 
               onClick={() => onDelete(id)} 
