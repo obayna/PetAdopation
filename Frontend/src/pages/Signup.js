@@ -29,8 +29,11 @@ const Signup = () => {
         navigate('/login'); 
     })
     .catch(err => {
+        // --- ONLY THIS PART CHANGED TO SHOW THE REAL ERROR ---
         console.error("Signup error details:", err);
-        alert("Registration failed. Please make sure your backend server and XAMPP/MySQL are running.");
+        const errorMessage = err.response?.data?.error || err.message;
+        alert("Registration failed: " + errorMessage);
+        // -----------------------------------------------------
     });
   };
 
