@@ -55,7 +55,14 @@ db.connect((err) => {
     });
 });
 
-app.use(cors());
+// --- ONLY THIS PART WAS UPDATED TO FIX THE CORS ERROR ---
+app.use(cors({
+    origin: "*", 
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
+// --------------------------------------------------------
+
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
