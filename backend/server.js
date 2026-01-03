@@ -1,8 +1,8 @@
 const express = require("express");
-const mysql = require("mysql2"); // Use mysql2 for better compatibility
+const mysql = require("mysql2"); 
 const cors = require("cors");
 const bcrypt = require("bcrypt");
-require('dotenv').config();      // This is the "Railway part" that reads your variables
+require('dotenv').config(); 
 
 const app = express();
 
@@ -20,7 +20,39 @@ db.connect((err) => {
         console.error("Database connection failed: " + err.stack);
         return;
     }
-    console.log("Connected to Railway MySQL database!"); 
+    console.log("Connected to Railway MySQL database!");
+
+    // --- AUTO-CREATE TABLES SECTION (NEW) ---
+    const createUsersTable = `
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL
+    );`;
+
+    const createPetsTable = `
+    CREATE TABLE IF NOT EXISTS pets (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      species VARCHAR(255) NOT NULL,
+      breed VARCHAR(255) DEFAULT 'Unknown',
+      age INT DEFAULT 0,
+      description TEXT,
+      Image LONGTEXT,
+      user_id INT,
+      status VARCHAR(50) DEFAULT 'available'
+    );`;
+
+    db.query(createUsersTable, (err) => {
+        if (err) console.error("Error creating users table:", err);
+        else console.log("Users table is ready!");
+    });
+
+    db.query(createPetsTable, (err) => {
+        if (err) console.error("Error creating pets table:", err);
+        else console.log("Pets table is ready!");
+    });
 });
 
 app.use(cors());
