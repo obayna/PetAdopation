@@ -6,29 +6,23 @@ require('dotenv').config();
 
 const app = express();
 
-// --- 1. CORS CONFIGURATION (FIXED) ---
-// This must be placed BEFORE any routes or other middleware
-app.use(cors({
-    origin: "*", // Allows all origins, you can change this to your specific frontend URL later
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-}));
-
-// This specifically handles the "Preflight" OPTIONS request that was failing with a 404
+// --- 1. CORS CONFIGURATION ---
+app.use(cors());
 app.options('*', cors()); 
 
 // --- 2. BODY PARSING MIDDLEWARE ---
+// Increased limits to ensure large pet images don't crash the server
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
-// --- 3. LIVE RAILWAY DATABASE CONNECTION ---
+// --- 3. DATABASE CONNECTION (FIXED VARIABLE NAMES) ---
+// Railway provides MYSQLHOST, MYSQLUSER, etc. by default.
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT
+  host: process.env.MYSQLHOST || process.env.DB_HOST,
+  user: process.env.MYSQLUSER || process.env.DB_USER,
+  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD,
+  database: process.env.MYSQLDATABASE || process.env.DB_NAME,
+  port: process.env.MYSQLPORT || process.env.DB_PORT || 3306
 });
 
 db.connect((err) => {
@@ -38,7 +32,7 @@ db.connect((err) => {
     }
     console.log("Connected to Railway MySQL database!");
 
-    // --- AUTO-CREATE TABLES SECTION ---
+    // Auto-create tables if they don't exist
     const createUsersTable = `
     CREATE TABLE IF NOT EXISTS users (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,39 +67,45 @@ db.connect((err) => {
 
 // --- 4. ROUTES ---
 
-// SIGNUP ROUTE
+// SIGNUP ROUTE (FIXED QUERY SYNTAX)
 app.post('/signup', async (req, res) => {
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const sql = "INSERT INTO users (`username`, `email`, `password`) VALUES (?)";
-        const values = [req.body.username, req.body.email, hashedPassword];
+        const { username, email, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
         
-        db.query(sql, [values], (err, data) => {
+        // Fixed: Use three ? for three values
+        const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        const values = [username, email, hashedPassword];
+        
+        db.query(sql, values, (err, data) => {
             if(err) {
                 console.error("Signup DB Error:", err.sqlMessage);
                 return res.status(500).json({ error: err.sqlMessage });
             }
-            return res.json({ message: "Success", data });
+            return res.json({ message: "Success" });
         });
     } catch (err) {
-        res.status(500).json({ error: "Server error during hashing" });
+        res.status(500).json({ error: "Server error during registration" });
     }
 });
 
 // LOGIN ROUTE
 app.post('/login', (req, res) => {
-    const sql = "SELECT * FROM users WHERE `email` = ?";
+    const sql = "SELECT * FROM users WHERE email = ?";
     db.query(sql, [req.body.email], async (err, data) => {
         if(err) return res.status(500).json({ error: "Database error" });
+        
         if(data.length > 0) {
             const match = await bcrypt.compare(req.body.password, data[0].password);
             if(match) {
-                return res.json({ message: "Success", user: data[0] });
+                // Remove password from response for security
+                const { password, ...userWithoutPassword } = data[0];
+                return res.json({ message: "Success", user: userWithoutPassword });
             } else {
-                return res.json({ message: "Fail", error: "Wrong password" });
+                return res.status(401).json({ message: "Fail", error: "Wrong password" });
             }
         } else {
-            return res.json({ message: "Fail", error: "User not found" });
+            return res.status(404).json({ message: "Fail", error: "User not found" });
         }
     });
 });
@@ -124,7 +124,7 @@ app.post("/add-pet", (req, res) => {
     ];
     db.query(sql, values, (err, data) => {
         if (err) {
-            console.error("MySQL Error:", err.sqlMessage);
+            console.error("MySQL Add Pet Error:", err.sqlMessage);
             return res.status(500).json({ error: err.sqlMessage });
         }
         return res.json({ message: "Success", id: data.insertId });
@@ -133,7 +133,7 @@ app.post("/add-pet", (req, res) => {
 
 // GET ALL PETS ROUTE
 app.get("/pets", (req, res) => {
-    const sql = "SELECT * FROM pets"; 
+    const sql = "SELECT * FROM pets ORDER BY id DESC"; 
     db.query(sql, (err, data) => {
         if (err) return res.status(500).json(err);
         return res.json(data);
@@ -156,7 +156,7 @@ app.delete("/pets/:id", (req, res) => {
     const sql = "DELETE FROM pets WHERE id = ?";
     db.query(sql, [id], (err, data) => {
         if (err) return res.status(500).json(err);
-        return res.json({ message: "Listing deleted", data });
+        return res.json({ message: "Listing deleted" });
     });
 });
 
