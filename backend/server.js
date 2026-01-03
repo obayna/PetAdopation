@@ -6,7 +6,23 @@ require('dotenv').config();
 
 const app = express();
 
-// --- LIVE RAILWAY CONNECTION ---
+// --- 1. CORS CONFIGURATION (FIXED) ---
+// This must be placed BEFORE any routes or other middleware
+app.use(cors({
+    origin: "*", // Allows all origins, you can change this to your specific frontend URL later
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
+
+// This specifically handles the "Preflight" OPTIONS request that was failing with a 404
+app.options('*', cors()); 
+
+// --- 2. BODY PARSING MIDDLEWARE ---
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
+// --- 3. LIVE RAILWAY DATABASE CONNECTION ---
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -22,7 +38,7 @@ db.connect((err) => {
     }
     console.log("Connected to Railway MySQL database!");
 
-    // --- AUTO-CREATE TABLES SECTION (NEW) ---
+    // --- AUTO-CREATE TABLES SECTION ---
     const createUsersTable = `
     CREATE TABLE IF NOT EXISTS users (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -55,19 +71,9 @@ db.connect((err) => {
     });
 });
 
-// --- ONLY THIS PART WAS UPDATED TO FIX THE CORS ERROR ---
-app.use(cors({
-    origin: "*", 
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
-// --------------------------------------------------------
+// --- 4. ROUTES ---
 
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
-
-// --- YOUR ROUTES (KEPT EXACTLY THE SAME) ---
-
+// SIGNUP ROUTE
 app.post('/signup', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -75,7 +81,10 @@ app.post('/signup', async (req, res) => {
         const values = [req.body.username, req.body.email, hashedPassword];
         
         db.query(sql, [values], (err, data) => {
-            if(err) return res.status(500).json({ error: err.sqlMessage });
+            if(err) {
+                console.error("Signup DB Error:", err.sqlMessage);
+                return res.status(500).json({ error: err.sqlMessage });
+            }
             return res.json({ message: "Success", data });
         });
     } catch (err) {
@@ -83,6 +92,7 @@ app.post('/signup', async (req, res) => {
     }
 });
 
+// LOGIN ROUTE
 app.post('/login', (req, res) => {
     const sql = "SELECT * FROM users WHERE `email` = ?";
     db.query(sql, [req.body.email], async (err, data) => {
@@ -100,6 +110,7 @@ app.post('/login', (req, res) => {
     });
 });
 
+// ADD PET ROUTE
 app.post("/add-pet", (req, res) => {
     const sql = "INSERT INTO pets (name, species, breed, age, description, Image, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'available')";
     const values = [
@@ -120,6 +131,7 @@ app.post("/add-pet", (req, res) => {
     });
 });
 
+// GET ALL PETS ROUTE
 app.get("/pets", (req, res) => {
     const sql = "SELECT * FROM pets"; 
     db.query(sql, (err, data) => {
@@ -128,6 +140,7 @@ app.get("/pets", (req, res) => {
     });
 });
 
+// ADOPT PET ROUTE (UPDATE)
 app.put("/adopt-pet/:id", (req, res) => {
     const id = req.params.id;
     const sql = "UPDATE pets SET status = 'adopted' WHERE id = ?";
@@ -137,6 +150,7 @@ app.put("/adopt-pet/:id", (req, res) => {
     });
 });
 
+// DELETE PET ROUTE
 app.delete("/pets/:id", (req, res) => {
     const id = req.params.id;
     const sql = "DELETE FROM pets WHERE id = ?";
@@ -146,6 +160,7 @@ app.delete("/pets/:id", (req, res) => {
     });
 });
 
+// --- 5. SERVER START ---
 const PORT = process.env.PORT || 8083; 
 
 app.listen(PORT, () => {
