@@ -59,7 +59,7 @@ const AddPet = () => {
     }
 
     // URL NOTE: Ensure 'petadopation' is spelled exactly as it appears in your Railway dashboard
-    axios.post('https://petadopation-production.up.railway.app/add-pet', { 
+    axios.post('https://petadopation-production.up.railway.app/api/add-pet', { 
         ...formData, 
         user_id: user.id 
     })

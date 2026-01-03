@@ -9,7 +9,7 @@ const SuccessStories = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('https://petadopation-production.up.railway.app')
+    axios.get('https://petadopation-production.up.railway.app/api')
       .then(res => {
         const adoptedOnly = res.data.filter(pet => pet.status === 'adopted');
         setHappyPets(adoptedOnly);

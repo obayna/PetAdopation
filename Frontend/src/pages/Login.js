@@ -11,7 +11,7 @@ const Login = () => {
   const handleSubmit = (event) => {
     event.preventDefault(); 
     
-    axios.post('https://petadopation-production.up.railway.app/login', { email, password })
+    axios.post('https://petadopation-production.up.railway.app/api/login', { email, password })
       .then(res => {
         if(res.data.message === "Success") {
           alert("Login Successful!");
