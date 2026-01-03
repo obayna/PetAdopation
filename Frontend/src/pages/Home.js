@@ -32,7 +32,7 @@ const Home = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to remove your listing?")) {
-      axios.delete(`https://petadoption-production.up.railway.app/${id}`)
+      axios.delete(`https://petadopation-production.up.railway.app/${id}`)
         .then(() => setMyPets(myPets.filter(pet => pet.id !== id)))
         .catch(err => console.error(err));
     }
