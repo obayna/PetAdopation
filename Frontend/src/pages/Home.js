@@ -10,12 +10,12 @@ const Home = () => {
   const [error, setError] = useState(null); 
   const navigate = useNavigate();
 
-  
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     if (user && user.id) {
-      axios.get('https://petadopation-production.up.railway.app/api')
+      // FIX 1: Changed '/api' to '/pets' to match your server.js
+      axios.get('https://petadopation-production.up.railway.app/pets')
         .then(res => {
           const filtered = res.data.filter(pet => pet.user_id === user.id);
           setMyPets(filtered);
@@ -23,7 +23,8 @@ const Home = () => {
         })
         .catch(err => {
           console.error("Backend Error:", err);
-          setError("Could not connect to the server. Please check if your backend is running on port 8083.");
+          // FIX 2: Removed the confusing "Port 8083" message
+          setError("Could not connect to the live server. Please try again later.");
         });
     } else {
       setMyPets([]); 
@@ -32,7 +33,8 @@ const Home = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to remove your listing?")) {
-      axios.delete(`https://petadopation-production.up.railway.app/api/${id}`)
+      // FIX 3: Changed '/api' to '/pets' to match your server.js
+      axios.delete(`https://petadopation-production.up.railway.app/pets/${id}`)
         .then(() => setMyPets(myPets.filter(pet => pet.id !== id)))
         .catch(err => console.error(err));
     }
@@ -42,7 +44,6 @@ const Home = () => {
     <>
       <div className="background-section" style={{ backgroundImage: `url(${heroImage})` }}>
         <div className="hero-content">
-          {/* FIX: Only show greeting if user exists. Otherwise show a generic welcome */}
           {user ? (
             <h1 className="par">Welcome, {user.username}!</h1>
           ) : (
@@ -56,14 +57,12 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Show an error message if the backend is down */}
       {error && (
         <div style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
           <p>{error}</p>
         </div>
       )}
 
-      {/* Only show this section if user is logged in AND has pets */}
       {user && myPets.length > 0 && (
         <div className="featured-pets-section">
           <h2>Your Listed Pets (Manage)</h2>
@@ -76,7 +75,8 @@ const Home = () => {
                 age={pet.age}
                 breed={pet.breed}
                 species={pet.species}
-                image={pet.image} 
+                // FIX 4: Changed 'pet.image' to 'pet.Image' to match your database column
+                image={pet.Image} 
                 status={pet.status}
                 onDelete={handleDelete}
                 isManagePage={true} 
